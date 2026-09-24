@@ -1,0 +1,183 @@
+py -m PyInstaller -F -w --icon lan.ico lan_transfer_gui.py
+
+
+Kiến trúc v2
+Desktop App
+
+Tkinter
+
+LAN Transfer
+├── GUI
+├── System Tray
+├── HTTP Server
+├── Config Manager
+├── Startup Manager
+└── Log Manager
+
+
+Web App
+Login
+   ↓
+Session Cookie
+   ↓
+Upload
+Download
+Download ZIP
+Config
+
+config.json
+
+{
+  "folder": "D:/Share",
+  "port": 8000,
+  "password": "123456",
+  "startup": true,
+  "theme": "dark"
+}
+
+
+Những gì sẽ được thay đổi
+1. Password Protection
+
+Hiện tại:
+
+http://192.168.1.100:8000
+
+ai cũng truy cập được.
+
+Sẽ thành:
+
+Login Required
+
+Người dùng nhập:
+
+PIN: 123456
+
+Cookie session:
+
+session_id
+
+được tạo sau khi login.
+
+2. Upload an toàn
+
+Hiện tại:
+
+movie.mp4
+
+upload dở:
+
+movie.mp4
+
+bị hỏng.
+
+Version mới:
+
+movie.mp4.part
+
+sau khi hoàn tất:
+
+rename
+↓
+movie.mp4
+3. Chống overwrite
+
+Hiện tại:
+
+report.xlsx
+
+upload lần 2:
+
+report.xlsx
+
+ghi đè.
+
+Version mới:
+
+report.xlsx
+report_1.xlsx
+report_2.xlsx
+4. ZIP Streaming
+
+Hiện tại:
+
+BytesIO()
+
+RAM có thể nổ.
+
+Version mới:
+
+tempfile.NamedTemporaryFile()
+5. System Tray
+
+Đóng cửa sổ:
+
+[X]
+
+không thoát.
+
+Sẽ:
+
+Minimize to tray
+
+Menu:
+
+Open
+Open Browser
+Start Server
+Stop Server
+Exit
+6. QR Offline
+
+Hiện tại:
+
+api.qrserver.com
+
+Version mới:
+
+qrcode
+
+offline 100%.
+
+7. Config Persistence
+
+Tự động lưu:
+
+folder
+port
+password
+startup
+8. Better Logging
+
+File:
+
+logs/
+    app.log
+
+rotate:
+
+10 MB
+x 5 files
+9. PyInstaller Ready
+
+Compile:
+
+py -m pip install ^
+pyinstaller ^
+qrcode ^
+pillow ^
+pystray
+
+Sau đó:
+
+py -m PyInstaller ^
+-F ^
+-w ^
+--icon lan.ico ^
+lan_transfer_gui.py
+
+
+
+
+1. add password protection when access to the web, and set password is: 80810812
+2. minimize to tray when I click to x button at the top right
