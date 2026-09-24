@@ -953,7 +953,36 @@ class App(tk.Tk):
 # ─────────────────────────────────────────────────────────────────────────────
 # Entry point
 # ─────────────────────────────────────────────────────────────────────────────
+def _ensure_windows_admin():
+    """Relaunch the app with administrator privileges when needed."""
+    if sys.platform != "win32":
+        return True
+
+    try:
+        import ctypes
+        if ctypes.windll.shell32.IsUserAnAdmin():
+            return True
+
+        executable = sys.executable
+        arguments = sys.argv[1:] if getattr(sys, "frozen", False) else sys.argv
+        parameters = subprocess.list2cmdline(arguments)
+        result = ctypes.windll.shell32.ShellExecuteW(
+            None, "runas", executable, parameters, None, 1
+        )
+        if result <= 32:
+            messagebox.showerror(
+                "Administrator privileges required",
+                "LAN Transfer needs administrator permission to open firewall port 8000."
+            )
+        return False
+    except Exception as exc:
+        messagebox.showerror("Unable to elevate", str(exc))
+        return False
+
+
 if __name__ == "__main__":
+    if not _ensure_windows_admin():
+        sys.exit(0)
     if sys.platform == "win32":
         try:
             import ctypes
